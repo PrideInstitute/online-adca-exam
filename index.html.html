@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ADCA Online Exam</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    .instructions {
+      background: #f0f0f0;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+    .timer {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 18px;
+      color: red;
+    }
+    input[type="text"] {
+      width: 300px;
+      padding: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="timer" id="timer">Time Left: 60:00</div>
+
+  <h1>Pride Institute of Knowledge & Skill, Dalrghat</h1>
+  <h2>Course: ADCA (Advanced Diploma in Computer Applications)</h2>
+  <h3>Subject: Computer Fundamentals</h3>
+
+  <div>
+    <label><strong>Date:</strong></label>
+    <input type="date" id="examDate">
+  </div>
+
+  <div class="instructions">
+    <strong>Instructions:</strong>
+    <ul>
+      <li>Time duration: 1 Hour</li>
+      <li>Total Questions: 50 (30 MCQ, 10 True/False, 10 Fill in the blanks)</li>
+      <li>Attempt all questions carefully.</li>
+      <li>Do not refresh or close the page.</li>
+    </ul>
+  </div>
+
+  <form id="examForm">
+    <!-- MCQs -->
+    <h3>Multiple Choice Questions (1-30)</h3>
+    <div id="mcqSection"></div>
+
+    <!-- True/False -->
+    <h3>True / False (31-40)</h3>
+    <div id="tfSection"></div>
+
+    <!-- Fill in the Blanks -->
+    <h3>Fill in the Blanks (41-50)</h3>
+    <div id="fillSection"></div>
+
+    <button type="button" onclick="submitExam()">Submit Exam</button>
+  </form>
+
+  <h2 id="result"></h2>
+
+  <script>
+    const mcqQuestions = [
+      {q: "What does CPU stand for?", options: ["Central Process Unit", "Central Processing Unit", "Computer Personal Unit"], answer: "Central Processing Unit"},
+      {q: "Which of the following is an input device?", options: ["Monitor", "Keyboard", "Speaker"], answer: "Keyboard"},
+      {q: "What is the full form of RAM?", options: ["Random Access Memory", "Read Access Memory", "Run Access Mode"], answer: "Random Access Memory"},
+      {q: "Which is a storage device?", options: ["Scanner", "Hard Disk", "Mouse"], answer: "Hard Disk"},
+      {q: "Which key is used to delete characters to the left of the cursor?", options: ["Delete", "Backspace", "Ctrl"], answer: "Backspace"},
+      {q: "MS Word is a __________", options: ["Operating System", "Word Processor", "Browser"], answer: "Word Processor"},
+      {q: "Which part of the computer performs calculations?", options: ["RAM", "CPU", "Monitor"], answer: "CPU"},
+      {q: "What does WWW stand for?", options: ["World Web Wide", "Wide World Web", "World Wide Web"], answer: "World Wide Web"},
+      {q: "A file with .xls extension is created by:", options: ["MS Word", "MS Excel", "PowerPoint"], answer: "MS Excel"},
+      {q: "Shortcut key to copy is:", options: ["Ctrl + C", "Ctrl + V", "Ctrl + X"], answer: "Ctrl + C"},
+      {q: "Shortcut key to paste is:", options: ["Ctrl + C", "Ctrl + V", "Ctrl + X"], answer: "Ctrl + V"},
+      {q: "What is the smallest unit of data?", options: ["Bit", "Byte", "Nibble"], answer: "Bit"},
+      {q: "Windows is a type of:", options: ["Hardware", "Software", "Device"], answer: "Software"},
+      {q: "What is the default extension of a Word document?", options: [".doc", ".txt", ".exe"], answer: ".doc"},
+      {q: "Email stands for:", options: ["Electronic Mail", "Electric Mail", "Engine Mail"], answer: "Electronic Mail"},
+      {q: "Printer is a(n):", options: ["Input device", "Output device", "Processing device"], answer: "Output device"},
+      {q: "Which one is not an operating system?", options: ["Linux", "Windows", "MS Word"], answer: "MS Word"},
+      {q: "What is the function of an operating system?", options: ["Translate language", "Manage hardware/software", "Display video"], answer: "Manage hardware/software"},
+      {q: "The full form of URL is:", options: ["Uniform Resource Locator", "Universal Resource Link", "Uniform Reference Locator"], answer: "Uniform Resource Locator"},
+      {q: "Which device is used to connect computers over telephone lines?", options: ["Router", "Switch", "Modem"], answer: "Modem"},
+      {q: "Which one is a programming language?", options: ["HTML", "USB", "HDD"], answer: "HTML"},
+      {q: "MS Paint is a:", options: ["Game", "Graphic application", "Antivirus"], answer: "Graphic application"},
+      {q: "Which key is used to start a new line in MS Word?", options: ["Space", "Enter", "Tab"], answer: "Enter"},
+      {q: "ALU stands for:", options: ["Arithmetic Logic Unit", "Artificial Logical Unit", "Automatic Logic Unit"], answer: "Arithmetic Logic Unit"},
+      {q: "Which is not a valid input device?", options: ["Mouse", "Joystick", "Projector"], answer: "Projector"},
+      {q: "What is the full form of PDF?", options: ["Portable Document Format", "Printed Data File", "Public Document File"], answer: "Portable Document Format"},
+      {q: "Which part stores data temporarily?", options: ["ROM", "RAM", "Hard disk"], answer: "RAM"},
+      {q: "Ctrl + S is used for:", options: ["Save", "Search", "Select"], answer: "Save"},
+      {q: "Data in computer is stored in:", options: ["Folders", "Printers", "RAM only"], answer: "Folders"},
+      {q: "Which is used for video calls?", options: ["Webcam", "Keyboard", "Scanner"], answer: "Webcam"}
+    ];
+
+    const trueFalseQuestions = {
+      31: {q: "A printer is an output device.", answer: "true"},
+      32: {q: "Windows is an operating system.", answer: "true"},
+      33: {q: "Scanner is an input device.", answer: "true"},
+      34: {q: "MS Excel is used for photo editing.", answer: "false"},
+      35: {q: "RAM is permanent memory.", answer: "false"},
+      36: {q: "CPU is the brain of the computer.", answer: "true"},
+      37: {q: "We can use keyboard to draw images.", answer: "false"},
+      38: {q: "USB is a type of storage device.", answer: "true"},
+      39: {q: "The internet and World Wide Web are exactly the same.", answer: "false"},
+      40: {q: "Ctrl + Z is used to undo.", answer: "true"}
+    };
+
+    const fillInTheBlanks = {
+      41: "CPU",
+      42: "Universal Serial Bus",
+      43: "Hard disk",
+      44: "Printer",
+      45: "Ctrl + V",
+      46: "Keyboard",
+      47: "Browser",
+      48: "Mouse",
+      49: "RAM",
+      50: "HyperText Markup Language"
+    };
+
+    const mcqDiv = document.getElementById("mcqSection");
+    mcqQuestions.forEach((item, index) => {
+      const qNum = index + 1;
+      let html = `<div class="question"><p>${qNum}. ${item.q}</p>`;
+      item.options.forEach(opt => {
+        html += `<input type="radio" name="q${qNum}" value="${opt}"> ${opt}<br>`;
+      });
+      html += '</div>';
+      mcqDiv.innerHTML += html;
+    });
+
+    const tfDiv = document.getElementById("tfSection");
+    for (let i = 31; i <= 40; i++) {
+      tfDiv.innerHTML += `
+        <div class="question">
+          <p>${i}. ${trueFalseQuestions[i].q}</p>
+          <input type="radio" name="q${i}" value="true"> True
+          <input type="radio" name="q${i}" value="false"> False
+        </div>
+      `;
+    }
+
+    const fillDiv = document.getElementById("fillSection");
+    for (let i = 41; i <= 50; i++) {
+      fillDiv.innerHTML += `
+        <div class="question">
+          <p>${i}. ${Object.values(fillInTheBlanks)[i - 41].replace(/.*/, match => match.replace(/______/g, '________'))}</p>
+          <input type="text" name="q${i}">
+        </div>
+      `;
+    }
+
+    function submitExam() {
+      clearInterval(timerInterval);
+      let score = 0;
+
+      mcqQuestions.forEach((item, index) => {
+        const q = document.querySelector(`input[name="q${index + 1}"]:checked`);
+        if (q && q.value === item.answer) score++;
+      });
+
+      for (let i = 31; i <= 40; i++) {
+        const q = document.querySelector(`input[name="q${i}"]:checked`);
+        if (q && q.value === trueFalseQuestions[i].answer) score++;
+      }
+
+      for (let i = 41; i <= 50; i++) {
+        const q = document.querySelector(`input[name="q${i}"]`);
+        if (q && q.value.trim().toLowerCase() === fillInTheBlanks[i].toLowerCase()) score++;
+      }
+
+      document.getElementById("result").innerText = "Rusult: " + score + " / 50";
+    }
+
+    let totalTime = 60 * 60;
+    const timerDisplay = document.getElementById("timer");
+    const timerInterval = setInterval(() => {
+      const minutes = Math.floor(totalTime / 60);
+      const seconds = totalTime % 60;
+      timerDisplay.textContent = `Time Left: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      totalTime--;
+      if (totalTime < 0) {
+        clearInterval(timerInterval);
+        alert("Time's up! Auto-submitting.");
+        submitExam();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
